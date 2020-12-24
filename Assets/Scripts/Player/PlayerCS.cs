@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerCS : MonoBehaviour
 {
@@ -22,10 +23,14 @@ public class PlayerCS : MonoBehaviour
 
     private PlayerState currentPlayerState;
     private PlayerDirection currentPlayerDirection;
-    private NPCCS nearNPC;
+    public List<Item> ownedItemsList;
+
 
     //References
+    private NPCCS nearNPC;
     public Animator storeAnimator;
+    public List<BuyingButtonUICS> buyingButtonUIList;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +38,7 @@ public class PlayerCS : MonoBehaviour
         currentPlayerState = PlayerState.Idle;
         currentPlayerDirection = PlayerDirection.Right;
         nearNPC = null;
+        ownedItemsList = new List<Item>();
 
 
     }
@@ -72,6 +78,14 @@ public class PlayerCS : MonoBehaviour
         if(condition)
         {
             currentPlayerState = PlayerState.Store;
+            int ammount = nearNPC.itemsToSell.Count;
+            for(int i =0; i< 4; i++) 
+            {
+                if (i < ammount)
+                    buyingButtonUIList[i].SetNewItem(nearNPC.itemsToSell[i]);
+                else
+                    buyingButtonUIList[i].SetNewItem(null);
+            }
             storeAnimator.SetBool("Open", true);
         }
         else 
@@ -81,6 +95,16 @@ public class PlayerCS : MonoBehaviour
         }
         
     }
+
+
+    #region ItemsSelectStore
+    public void AddToBuyingCart(int i) 
+    {
+
+    }
+    #endregion
+
+
     #region NPC Enter and Leaves the Player Area
     void OnTriggerEnter2D(Collider2D obj)
     {
