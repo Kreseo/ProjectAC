@@ -35,6 +35,8 @@ public class PlayerCS : MonoBehaviour
     private Vector2 movement;
 
 
+    public Text npcToolTip;
+
 
     //References
     private NPCCS nearNPC;
@@ -129,6 +131,7 @@ public class PlayerCS : MonoBehaviour
             RefreshBuyingStore();
             RefreshSellingStore();
             storeAnimator.SetBool("Open", true);
+            npcToolTip.text = "";
         }
         else 
         {
@@ -140,6 +143,7 @@ public class PlayerCS : MonoBehaviour
             cartSellingSum = 0;
             itemsCartBuyList.Clear();
             itemsCartSellList.Clear();
+            npcToolTip.text = "Press E to enter the " + nearNPC.transform.name;
         }
         
     }
@@ -271,8 +275,9 @@ public class PlayerCS : MonoBehaviour
     {
         if(obj.tag == "NPC")
         {
-            Debug.Log("Entra");
+            
             nearNPC = (NPCCS)obj.gameObject.GetComponent(typeof(NPCCS));
+            npcToolTip.text = "Press E to enter the " + nearNPC.transform.name;
         }
        
     }
@@ -281,7 +286,7 @@ public class PlayerCS : MonoBehaviour
     {
         if (obj.tag == "NPC")
         {
-            Debug.Log("Sale");
+            npcToolTip.text = "";
             nearNPC = null;
         }
 
