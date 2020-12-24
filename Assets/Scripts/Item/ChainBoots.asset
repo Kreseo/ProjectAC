@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c551d3f9847a4f45a1c0a65e6388ed6, type: 3}
-  m_Name: DiamondHelmet
+  m_Name: ChainBoots
   m_EditorClassIdentifier: 
-  name: Diamond Helmet
-  ID: 13
-  icon: {fileID: -7573354855677281409, guid: e437c2fc1c92b0d47ada35a342805a10, type: 3}
-  buyingPrice: 600
-  sellingPrice: 300
-  type: 0
+  name: Iron Boots
+  ID: 4
+  icon: {fileID: -5586402497227972868, guid: e437c2fc1c92b0d47ada35a342805a10, type: 3}
+  buyingPrice: 100
+  sellingPrice: 50
+  type: 3

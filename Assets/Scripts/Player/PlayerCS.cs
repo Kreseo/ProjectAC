@@ -58,6 +58,7 @@ public class PlayerCS : MonoBehaviour
 
 
     public Text storeTextMessage;
+    public Animator playerAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -73,7 +74,7 @@ public class PlayerCS : MonoBehaviour
         itemsCartSellList = new List<Item>();
         cartSellingSum = 0;
 
-        currentGold = 1000;
+        currentGold = 5000;
 
         SetCurrentGoldText();
 
@@ -304,6 +305,8 @@ public class PlayerCS : MonoBehaviour
     private void FixedUpdate()
     {
         rb.MovePosition(rb.position + movement * moveSpeed * Time.deltaTime);
+        playerAnimator.SetFloat("Horizontal", movement.x);
+        playerAnimator.SetFloat("Vertical", movement.y);
 
         transform.rotation = Quaternion.identity;
     }

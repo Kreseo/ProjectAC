@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: IronPants
   m_EditorClassIdentifier: 
   name: Iron Pants
-  ID: 3
+  ID: 7
   icon: {fileID: -2360418572804486258, guid: e437c2fc1c92b0d47ada35a342805a10, type: 3}
   buyingPrice: 200
   sellingPrice: 100

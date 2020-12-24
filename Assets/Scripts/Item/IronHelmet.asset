@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: IronHelmet
   m_EditorClassIdentifier: 
   name: Iron Helmet
-  ID: 1
+  ID: 5
   icon: {fileID: 8033092973025764044, guid: e437c2fc1c92b0d47ada35a342805a10, type: 3}
   buyingPrice: 200
   sellingPrice: 100

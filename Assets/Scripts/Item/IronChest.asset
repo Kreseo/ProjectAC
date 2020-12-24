@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: IronChest
   m_EditorClassIdentifier: 
   name: Iron Chest
-  ID: 2
+  ID: 6
   icon: {fileID: -2421343691936151383, guid: e437c2fc1c92b0d47ada35a342805a10, type: 3}
   buyingPrice: 200
   sellingPrice: 100
