@@ -22,7 +22,7 @@ public class PlayerCS : MonoBehaviour
 
     private PlayerState currentPlayerState;
     private PlayerDirection currentPlayerDirection;
-    public bool nearNPC;
+    private NPCCS nearNPC;
 
     //References
     public Animator storeAnimator;
@@ -32,7 +32,7 @@ public class PlayerCS : MonoBehaviour
     {
         currentPlayerState = PlayerState.Idle;
         currentPlayerDirection = PlayerDirection.Right;
-        nearNPC = true;
+        nearNPC = null;
 
 
     }
@@ -44,7 +44,7 @@ public class PlayerCS : MonoBehaviour
         
         if(currentPlayerState == PlayerState.Idle) 
         {
-            if (nearNPC) 
+            if (nearNPC != null) 
             {
                 if(Input.GetKey("e"))
                 {
@@ -81,4 +81,26 @@ public class PlayerCS : MonoBehaviour
         }
         
     }
+    #region NPC Enter and Leaves the Player Area
+    void OnTriggerEnter2D(Collider2D obj)
+    {
+        if(obj.tag == "NPC")
+        {
+            Debug.Log("Entra");
+            nearNPC = (NPCCS)obj.gameObject.GetComponent(typeof(NPCCS));
+        }
+       
+    }
+
+    void OnTriggerExit2D(Collider2D obj)
+    {
+        if (obj.tag == "NPC")
+        {
+            Debug.Log("Sale");
+            nearNPC = null;
+        }
+
+    }
+    #endregion
+
 }
