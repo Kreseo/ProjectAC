@@ -39,10 +39,18 @@ public class PlayerCS : MonoBehaviour
 
     //Buying
     private List<Item> itemsCartBuyList;
-    public List<BuyingButtonUICS> buyingButtonUIList;
-    private int cartSum;
+    public List<ButtonUICS> buyingButtonUIList;
+    private int cartBuyingSum;
     public Text buyingPriceText;
 
+    //Selling
+    private List<Item> itemsCartSellList;
+    public List<ButtonUICS> sellingButtonUIList;
+    private int cartSellingSum;
+    public Text sellingPriceText;
+
+
+    public Text storeTextMessage;
 
     // Start is called before the first frame update
     void Start()
@@ -51,9 +59,14 @@ public class PlayerCS : MonoBehaviour
         currentPlayerDirection = PlayerDirection.Right;
         nearNPC = null;
         ownedItemsList = new List<Item>();
+
         itemsCartBuyList = new List<Item>();
-        cartSum = 0;
-        currentGold = 100000;
+        cartBuyingSum = 0;
+
+        itemsCartSellList = new List<Item>();
+        cartSellingSum = 0;
+
+        currentGold = 1000;
 
         SetCurrentGoldText();
 
@@ -73,6 +86,7 @@ public class PlayerCS : MonoBehaviour
             {
                 if(Input.GetKey("e"))
                 {
+                    storeTextMessage.text = "";
                     PlayerOpenCloseStore(true);
                 }
             }
@@ -99,6 +113,7 @@ public class PlayerCS : MonoBehaviour
             currentPlayerState = PlayerState.Store;
             
             RefreshBuyingStore();
+            RefreshSellingStore();
             storeAnimator.SetBool("Open", true);
         }
         else 
@@ -133,32 +148,100 @@ public class PlayerCS : MonoBehaviour
                 buyingButtonUIList[i].SetBuyingItem(null, false);
         }
     }
-    public void AddToBuyingCart(int i) 
+
+    public bool AddToBuyingCart(int i) 
     {
+        if (nearNPC.itemsToSell[i].buyingPrice + cartBuyingSum > currentGold)
+        {
+            storeTextMessage.text = "Don't have enough gold to add to cart";
+            return false;
+        }
+        else
+        {
+            itemsCartBuyList.Add(nearNPC.itemsToSell[i]);
+            cartBuyingSum += nearNPC.itemsToSell[i].buyingPrice;
+            buyingPriceText.text = cartBuyingSum.ToString();
+        }
+        return true;
+
         
-        itemsCartBuyList.Add(nearNPC.itemsToSell[i]);
-        cartSum += nearNPC.itemsToSell[i].buyingPrice;
-        buyingPriceText.text = cartSum.ToString();
     }
     public void RemoveFromBuyingCart(int i)
     {
 
         itemsCartBuyList.Remove(nearNPC.itemsToSell[i]);
-        cartSum -= nearNPC.itemsToSell[i].buyingPrice;
-        buyingPriceText.text = cartSum.ToString();
+        cartBuyingSum -= nearNPC.itemsToSell[i].buyingPrice;
+        buyingPriceText.text = cartBuyingSum.ToString();
     }
-
     public void PurchaseFromStore() 
     {
-        foreach(Item currentItem in itemsCartBuyList) 
-            ownedItemsList.Add(currentItem);
-        itemsCartBuyList.Clear();
-        currentGold -= cartSum;
-        cartSum = 0;
-        buyingPriceText.text = cartSum.ToString();
-        SetCurrentGoldText();
-        RefreshBuyingStore();
+        if(itemsCartSellList.Count == 0) 
+        {
+            storeTextMessage.text = "Bought clothes for " + cartBuyingSum + " gold";
+            foreach (Item currentItem in itemsCartBuyList)
+                ownedItemsList.Add(currentItem);
+            itemsCartBuyList.Clear();
+            currentGold -= cartBuyingSum;
+            cartBuyingSum = 0;
+            buyingPriceText.text = cartBuyingSum.ToString();
+            SetCurrentGoldText();
+            RefreshBuyingStore();
+            RefreshSellingStore();
+        }
+        else
+            storeTextMessage.text = "Can't buy clothes for when you are also selling";
+
+
+    }
+
+    public void RefreshSellingStore()
+    {
+        int ammount = ownedItemsList.Count;
+        for (int i = 0; i < 16; i++)
+        {
+
+            if (i < ammount)
+            {
+                sellingButtonUIList[i].SetSellingItem(ownedItemsList[i]);
+            }
+
+            else
+                sellingButtonUIList[i].SetSellingItem(null);
+        }
+    }
+    public void AddToSellinggCart(int i)
+    {
+
+        itemsCartSellList.Add(ownedItemsList[i]);
+        cartSellingSum += ownedItemsList[i].sellingPrice;
+        sellingPriceText.text = cartSellingSum.ToString();
+    }
+    public void RemoveFromSellingCart(int i)
+    {
+
+        itemsCartSellList.Remove(ownedItemsList[i]);
+        cartSellingSum -= ownedItemsList[i].sellingPrice;
+        sellingPriceText.text = cartSellingSum.ToString();
+    }
+    public void SellToStore()
+    {
+        if (itemsCartBuyList.Count == 0)
+        {
+            storeTextMessage.text = "Sold clothes for " + cartSellingSum + " gold";
+            foreach (Item currentItem in itemsCartSellList)
+                ownedItemsList.Remove(currentItem);
+            itemsCartSellList.Clear();
+            currentGold += cartSellingSum;
+            cartSellingSum = 0;
+            sellingPriceText.text = cartSellingSum.ToString();
+            SetCurrentGoldText();
+            RefreshBuyingStore();
+            RefreshSellingStore();
+        }
+        else
+            storeTextMessage.text = "Can't sell clothes for when you are also buying";
         
+
     }
     #endregion
 
