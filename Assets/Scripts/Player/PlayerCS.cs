@@ -23,14 +23,26 @@ public class PlayerCS : MonoBehaviour
 
     private PlayerState currentPlayerState;
     private PlayerDirection currentPlayerDirection;
+    
     public List<Item> ownedItemsList;
+    private int currentGold;
+
+    public Item testingItem;
+    
 
 
     //References
     private NPCCS nearNPC;
+    public Text currentGoldText;
     public Animator storeAnimator;
-    public List<BuyingButtonUICS> buyingButtonUIList;
     
+
+    //Buying
+    private List<Item> itemsCartBuyList;
+    public List<BuyingButtonUICS> buyingButtonUIList;
+    private int cartSum;
+    public Text buyingPriceText;
+
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +51,13 @@ public class PlayerCS : MonoBehaviour
         currentPlayerDirection = PlayerDirection.Right;
         nearNPC = null;
         ownedItemsList = new List<Item>();
+        itemsCartBuyList = new List<Item>();
+        cartSum = 0;
+        currentGold = 100000;
+
+        SetCurrentGoldText();
+
+        ownedItemsList.Add(testingItem);
 
 
     }
@@ -78,14 +97,8 @@ public class PlayerCS : MonoBehaviour
         if(condition)
         {
             currentPlayerState = PlayerState.Store;
-            int ammount = nearNPC.itemsToSell.Count;
-            for(int i =0; i< 4; i++) 
-            {
-                if (i < ammount)
-                    buyingButtonUIList[i].SetNewItem(nearNPC.itemsToSell[i]);
-                else
-                    buyingButtonUIList[i].SetNewItem(null);
-            }
+            
+            RefreshBuyingStore();
             storeAnimator.SetBool("Open", true);
         }
         else 
@@ -97,10 +110,55 @@ public class PlayerCS : MonoBehaviour
     }
 
 
+    void SetCurrentGoldText() 
+    {
+        currentGoldText.text = currentGold.ToString();
+    }
+
     #region ItemsSelectStore
+
+    public void RefreshBuyingStore()
+    {
+        int ammount = nearNPC.itemsToSell.Count;
+        for (int i = 0; i < 16; i++)
+        {
+            
+            if (i < ammount)
+            {
+                bool hasItem = ownedItemsList.Contains(nearNPC.itemsToSell[i]);
+                buyingButtonUIList[i].SetBuyingItem(nearNPC.itemsToSell[i], hasItem);
+            }
+
+            else
+                buyingButtonUIList[i].SetBuyingItem(null, false);
+        }
+    }
     public void AddToBuyingCart(int i) 
     {
+        
+        itemsCartBuyList.Add(nearNPC.itemsToSell[i]);
+        cartSum += nearNPC.itemsToSell[i].buyingPrice;
+        buyingPriceText.text = cartSum.ToString();
+    }
+    public void RemoveFromBuyingCart(int i)
+    {
 
+        itemsCartBuyList.Remove(nearNPC.itemsToSell[i]);
+        cartSum -= nearNPC.itemsToSell[i].buyingPrice;
+        buyingPriceText.text = cartSum.ToString();
+    }
+
+    public void PurchaseFromStore() 
+    {
+        foreach(Item currentItem in itemsCartBuyList) 
+            ownedItemsList.Add(currentItem);
+        itemsCartBuyList.Clear();
+        currentGold -= cartSum;
+        cartSum = 0;
+        buyingPriceText.text = cartSum.ToString();
+        SetCurrentGoldText();
+        RefreshBuyingStore();
+        
     }
     #endregion
 
