@@ -28,7 +28,12 @@ public class PlayerCS : MonoBehaviour
     private int currentGold;
 
     public Item testingItem;
-    
+
+
+    public float moveSpeed;
+    public Rigidbody2D rb;
+    private Vector2 movement;
+
 
 
     //References
@@ -78,18 +83,25 @@ public class PlayerCS : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         #region Movement
         
         if(currentPlayerState == PlayerState.Idle) 
         {
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.y = Input.GetAxisRaw("Vertical");
             if (nearNPC != null) 
             {
                 if(Input.GetKey("e"))
                 {
-                    storeTextMessage.text = "";
+                    storeTextMessage.text = "Press ESC to close store or click exit button";
                     PlayerOpenCloseStore(true);
+                    movement = new Vector2(0, 0);
                 }
             }
+
+            
+
         }
         #endregion
 
@@ -100,12 +112,14 @@ public class PlayerCS : MonoBehaviour
             if (Input.GetKey(KeyCode.Escape))
             {
                 PlayerOpenCloseStore(false);
+
             }
         }
         #endregion
 
     }
 
+    #region ItemsSelectStore
     public void PlayerOpenCloseStore(bool condition)
     {
         if(condition)
@@ -120,6 +134,12 @@ public class PlayerCS : MonoBehaviour
         {
             currentPlayerState = PlayerState.Idle;
             storeAnimator.SetBool("Open", false);
+            buyingPriceText.text = "0";
+            sellingPriceText.text = "0";
+            cartBuyingSum = 0;
+            cartSellingSum = 0;
+            itemsCartBuyList.Clear();
+            itemsCartSellList.Clear();
         }
         
     }
@@ -130,7 +150,7 @@ public class PlayerCS : MonoBehaviour
         currentGoldText.text = currentGold.ToString();
     }
 
-    #region ItemsSelectStore
+  
 
     public void RefreshBuyingStore()
     {
@@ -267,5 +287,20 @@ public class PlayerCS : MonoBehaviour
 
     }
     #endregion
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Land")
+        {
+            rb.velocity = Vector2.zero;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.deltaTime);
+
+        transform.rotation = Quaternion.identity;
+    }
 
 }
