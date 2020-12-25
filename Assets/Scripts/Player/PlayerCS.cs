@@ -12,17 +12,8 @@ public class PlayerCS : MonoBehaviour
         Inventory
     }
 
-    enum PlayerDirection
-    {
-        Up,
-        Right,
-        Down,
-        Left
-    }
 
     private PlayerState currentPlayerState;
-    private PlayerDirection currentPlayerDirection;
-    
     public List<Item> ownedItemsList;
     private int currentGold;
 
@@ -75,6 +66,8 @@ public class PlayerCS : MonoBehaviour
     public Image equippedUIPants;
     public Image equippedUIBoots;
 
+    
+
     public Text storeTextMessage;
     public Text inventoryTextMessage;
     
@@ -84,7 +77,6 @@ public class PlayerCS : MonoBehaviour
     void Start()
     {
         currentPlayerState = PlayerState.Idle;
-        currentPlayerDirection = PlayerDirection.Right;
         nearNPC = null;
         ownedItemsList = new List<Item>();
 
@@ -105,6 +97,8 @@ public class PlayerCS : MonoBehaviour
         equippedPants = null;
         equippedBoots = null;
 
+        playerAnimator.SetInteger("FacingDirection", 1);
+
 
     }
 
@@ -123,6 +117,7 @@ public class PlayerCS : MonoBehaviour
                 if(Input.GetKey("e"))
                 {
                     storeTextMessage.text = "Press ESC to close store or click exit button";
+                    inventoryToolTip.text = "";
                     PlayerOpenCloseStore(true);
                     movement = new Vector2(0, 0);
                 }
@@ -132,6 +127,7 @@ public class PlayerCS : MonoBehaviour
             {
                 inventoryTextMessage.text = "Press ESC to close inventory or click exit button";
                 inventoryToolTip.text = "";
+                npcToolTip.text = "";
                 PlayerOpenCloseInvetory(true);
                 movement = new Vector2(0, 0);
             }
@@ -153,6 +149,7 @@ public class PlayerCS : MonoBehaviour
         }
         #endregion
 
+        #region Inventory
         if (currentPlayerState == PlayerState.Inventory)
         {
             if (Input.GetKey(KeyCode.Escape))
@@ -161,6 +158,7 @@ public class PlayerCS : MonoBehaviour
 
             }
         }
+        #endregion
 
     }
 
@@ -187,6 +185,8 @@ public class PlayerCS : MonoBehaviour
             itemsCartBuyList.Clear();
             itemsCartSellList.Clear();
             npcToolTip.text = "Press E to enter the " + nearNPC.transform.name;
+            inventoryToolTip.text = "Inventory can be open with 'i'";
+
         }
         
     }
@@ -336,7 +336,7 @@ public class PlayerCS : MonoBehaviour
     }
     #endregion
 
-
+    #region Inventory/Equipment
     public void PlayerOpenCloseInvetory(bool condition) 
     {
         if (condition)
@@ -354,7 +354,7 @@ public class PlayerCS : MonoBehaviour
             if (equippedBoots == null)
                 equippedUIBoots.gameObject.SetActive(false);
 
-    int ammount = ownedItemsList.Count;
+            int ammount = ownedItemsList.Count;
             for (int i=0; i<16;i++)
             {
                 if(i< ammount)
@@ -373,6 +373,10 @@ public class PlayerCS : MonoBehaviour
             currentPlayerState = PlayerState.Idle;
             inventoryAnimator.SetBool("Open", false);
             inventoryToolTip.text = "Inventory can be open with 'i'";
+            if (nearNPC != null) 
+            {
+                npcToolTip.text = "Press E to enter the " + nearNPC.transform.name;
+            }
         }
     }
 
@@ -395,18 +399,22 @@ public class PlayerCS : MonoBehaviour
                 case Item.ItemType.Helmet:
                     equippedHelmet = null;
                     equippedUIHelmet.gameObject.SetActive(false);
+                    ((SpriteRenderer)gameObject.transform.GetChild(0).GetComponent(typeof(SpriteRenderer))).sprite = null;
                     break;
                 case Item.ItemType.Chest:
                     equippedChest = null;
                     equippedUIChest.gameObject.SetActive(false);
+                    ((SpriteRenderer)gameObject.transform.GetChild(1).GetComponent(typeof(SpriteRenderer))).sprite = null;
                     break;
                 case Item.ItemType.Pants:
                     equippedPants = null;
                     equippedUIPants.gameObject.SetActive(false);
+                    ((SpriteRenderer)gameObject.transform.GetChild(2).GetComponent(typeof(SpriteRenderer))).sprite = null;
                     break;
                 case Item.ItemType.Boots:
                     equippedBoots = null;
                     equippedUIBoots.gameObject.SetActive(false);
+                    ((SpriteRenderer)gameObject.transform.GetChild(3).GetComponent(typeof(SpriteRenderer))).sprite = null;
                     break;
             }
             selectedItemUI.ResetItem(false);
@@ -420,21 +428,25 @@ public class PlayerCS : MonoBehaviour
                     equippedHelmet = selectedItemInventory;
                     equippedUIHelmet.sprite = equippedHelmet.icon;
                     equippedUIHelmet.gameObject.SetActive(true);
+                    ((SpriteRenderer)gameObject.transform.GetChild(0).GetComponent(typeof(SpriteRenderer))).sprite = equippedHelmet.icon;
                     break;
                 case Item.ItemType.Chest:
                     equippedChest = selectedItemInventory;
                     equippedUIChest.sprite = equippedChest.icon;
                     equippedUIChest.gameObject.SetActive(true);
+                    ((SpriteRenderer)gameObject.transform.GetChild(1).GetComponent(typeof(SpriteRenderer))).sprite = equippedChest.icon;
                     break;
                 case Item.ItemType.Pants:
                     equippedPants = selectedItemInventory;
                     equippedUIPants.sprite = equippedPants.icon;
                     equippedUIPants.gameObject.SetActive(true);
+                    ((SpriteRenderer)gameObject.transform.GetChild(2).GetComponent(typeof(SpriteRenderer))).sprite = equippedPants.icon;
                     break;
                 case Item.ItemType.Boots:
                     equippedBoots = selectedItemInventory;
                     equippedUIBoots.sprite = equippedBoots.icon;
                     equippedUIBoots.gameObject.SetActive(true);
+                    ((SpriteRenderer)gameObject.transform.GetChild(3).GetComponent(typeof(SpriteRenderer))).sprite = equippedBoots.icon;
                     break;
             }
 
@@ -478,6 +490,7 @@ public class PlayerCS : MonoBehaviour
         return false;
     }
 
+    #endregion
 
 
 
@@ -495,6 +508,19 @@ public class PlayerCS : MonoBehaviour
         rb.MovePosition(rb.position + movement * moveSpeed * Time.deltaTime);
         playerAnimator.SetFloat("Horizontal", movement.x);
         playerAnimator.SetFloat("Vertical", movement.y);
+
+        //Doing this so the animations only have 4 directions so the items on top of the char dont mess up on the bleding tree, also to prioritize 1 direction over another
+        if(movement.x > 0)
+            playerAnimator.SetInteger("FacingDirection", 1);
+        else
+            if(movement.x < 0)
+                playerAnimator.SetInteger("FacingDirection", 3);
+            else
+                if(movement.y > 0)
+                    playerAnimator.SetInteger("FacingDirection", 0);
+                else
+                    if(movement.y<0)
+                        playerAnimator.SetInteger("FacingDirection", 2);
 
         transform.rotation = Quaternion.identity;
     }
