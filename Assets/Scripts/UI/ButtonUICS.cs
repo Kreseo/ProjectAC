@@ -96,9 +96,12 @@ public class ButtonUICS : MonoBehaviour
             }
             else
             {
-                buttonImage.color = Color.grey;
-                player.AddToSellinggCart(id);
-                selected = !selected;
+                if(player.AddToSellinggCart(id))
+                {
+                    buttonImage.color = Color.grey;
+                    selected = !selected;
+                }
+                
             }
                 
         }

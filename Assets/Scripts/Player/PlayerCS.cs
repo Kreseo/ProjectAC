@@ -276,12 +276,21 @@ public class PlayerCS : MonoBehaviour
                 sellingButtonUIList[i].SetSellingItem(null);
         }
     }
-    public void AddToSellinggCart(int i)
+    public bool AddToSellinggCart(int i)
     {
-
-        itemsCartSellList.Add(ownedItemsList[i]);
-        cartSellingSum += ownedItemsList[i].sellingPrice;
-        sellingPriceText.text = cartSellingSum.ToString();
+        if(CompareEquipped(ownedItemsList[i]))
+        {
+            storeTextMessage.text = "Can't add equipped item to the cart";
+            return false;
+        }
+        else 
+        {
+            itemsCartSellList.Add(ownedItemsList[i]);
+            cartSellingSum += ownedItemsList[i].sellingPrice;
+            sellingPriceText.text = cartSellingSum.ToString();
+            return true;
+        }
+        
     }
     public void RemoveFromSellingCart(int i)
     {
