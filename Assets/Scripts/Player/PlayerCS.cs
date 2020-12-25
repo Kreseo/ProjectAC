@@ -9,8 +9,7 @@ public class PlayerCS : MonoBehaviour
     {
         Idle,
         Store,
-        Inventory,
-        Status
+        Inventory
     }
 
     enum PlayerDirection
@@ -42,7 +41,8 @@ public class PlayerCS : MonoBehaviour
     private NPCCS nearNPC;
     public Text currentGoldText;
     public Animator storeAnimator;
-    
+    public Animator inventoryAnimator;
+
 
     //Buying
     private List<Item> itemsCartBuyList;
@@ -56,6 +56,17 @@ public class PlayerCS : MonoBehaviour
     private int cartSellingSum;
     public Text sellingPriceText;
 
+    //Inventory
+
+    public List<InventoryItemCS> inventoryItemUIList;
+    public SelectedItemCS selectedItemUI;
+    private Item selectedItemInventory;
+
+    //Equipment
+    private Item equippedHelmet;
+    private Item equippedChest;
+    private Item equippedPants;
+    private Item equippedBoots;
 
     public Text storeTextMessage;
     public Animator playerAnimator;
@@ -80,6 +91,11 @@ public class PlayerCS : MonoBehaviour
 
         ownedItemsList.Add(testingItem);
 
+        equippedHelmet = null;
+        equippedChest = null;
+        equippedPants = null;
+        equippedBoots = null;
+
 
     }
 
@@ -101,6 +117,12 @@ public class PlayerCS : MonoBehaviour
                     PlayerOpenCloseStore(true);
                     movement = new Vector2(0, 0);
                 }
+                
+            }
+            if (Input.GetKey("i"))
+            {
+                PlayerOpenCloseInvetory(true);
+                movement = new Vector2(0, 0);
             }
 
             
@@ -119,6 +141,15 @@ public class PlayerCS : MonoBehaviour
             }
         }
         #endregion
+
+        if (currentPlayerState == PlayerState.Inventory)
+        {
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                PlayerOpenCloseInvetory(false);
+
+            }
+        }
 
     }
 
@@ -294,6 +325,65 @@ public class PlayerCS : MonoBehaviour
     }
     #endregion
 
+
+    public void PlayerOpenCloseInvetory(bool condition) 
+    {
+        if (condition)
+        {
+            currentPlayerState = PlayerState.Inventory;
+            inventoryAnimator.SetBool("Open", true);
+            selectedItemInventory = null;
+            selectedItemUI.ResetItem();
+            int ammount = ownedItemsList.Count;
+            for(int i=0; i<2;i++)
+            {
+                if(i< ammount)
+                {
+                    inventoryItemUIList[i].SetInventoryItem(ownedItemsList[i]);
+                }
+                else 
+                {
+                    inventoryItemUIList[i].SetInventoryItem(null);
+                }
+                
+            }
+        }
+        else 
+        {
+            currentPlayerState = PlayerState.Idle;
+            inventoryAnimator.SetBool("Open", false);
+        }
+    }
+
+    public void SelectItemFromInventory(int id)
+    {
+        bool equipped = CompareEquipped(ownedItemsList[id]);
+        if(selectedItemInventory==null)
+            selectedItemUI.SelectItem(ownedItemsList[id],true, equipped);
+        else
+            selectedItemUI.SelectItem(ownedItemsList[id], false, equipped);
+        //selectedItemImage.sprite = ownedItemsList[id].icon;
+        selectedItemInventory = ownedItemsList[id];
+    }
+
+    private bool CompareEquipped(Item item)
+    {
+
+        switch (item.type) 
+        {
+            case Item.ItemType.Helmet:
+                if(item == equippedHelmet)
+                {
+                    return true;
+                }
+                break;
+        }
+
+        return false;
+    }
+
+
+    #region Player Movement Physics
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.name == "Land")
@@ -310,5 +400,8 @@ public class PlayerCS : MonoBehaviour
 
         transform.rotation = Quaternion.identity;
     }
+
+    #endregion
+
 
 }
