@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -4828726111148987511}
   - component: {fileID: 7460913445410116978}
   m_Layer: 0
-  m_Name: Center
+  m_Name: Left
   m_TagString: Land
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: -834634459
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 222537989714955352, guid: 301febe48ac891a469a91c8357083032, type: 3}
+  m_Sprite: {fileID: 5895540913150188443, guid: 942df76e707a9fc4694553b7c95db7ba, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -95,7 +95,7 @@ Animator:
   m_GameObject: {fileID: 1625205233904937650}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 45c96acab7c2ce741ba22dbbba9f433c, type: 2}
+  m_Controller: {fileID: 9100000, guid: c2450113a2da99442a5c184d5a48a9ef, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
