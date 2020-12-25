@@ -17,4 +17,4 @@ MonoBehaviour:
   icon: {fileID: 1013099012324604318, guid: e437c2fc1c92b0d47ada35a342805a10, type: 3}
   buyingPrice: 400
   sellingPrice: 200
-  type: 0
+  type: 1

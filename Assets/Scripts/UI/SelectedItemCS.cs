@@ -37,8 +37,16 @@ public class SelectedItemCS : MonoBehaviour
 
     }
 
-    public void ResetItem()
+    public void TurnOffItem()
     {
         gameObject.SetActive(false);
+    }
+
+    public void ResetItem(bool equipped)
+    {
+        if (equipped)
+            selectedItemText.text = "Unequip";
+        else
+            selectedItemText.text = "Equip";
     }
 }

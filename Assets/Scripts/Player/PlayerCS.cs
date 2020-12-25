@@ -35,6 +35,7 @@ public class PlayerCS : MonoBehaviour
 
 
     public Text npcToolTip;
+    public Text inventoryToolTip;
 
 
     //References
@@ -68,7 +69,15 @@ public class PlayerCS : MonoBehaviour
     private Item equippedPants;
     private Item equippedBoots;
 
+    //EquipmentUI
+    public Image equippedUIHelmet;
+    public Image equippedUIChest;
+    public Image equippedUIPants;
+    public Image equippedUIBoots;
+
     public Text storeTextMessage;
+    public Text inventoryTextMessage;
+    
     public Animator playerAnimator;
 
     // Start is called before the first frame update
@@ -121,6 +130,8 @@ public class PlayerCS : MonoBehaviour
             }
             if (Input.GetKey("i"))
             {
+                inventoryTextMessage.text = "Press ESC to close inventory or click exit button";
+                inventoryToolTip.text = "";
                 PlayerOpenCloseInvetory(true);
                 movement = new Vector2(0, 0);
             }
@@ -333,9 +344,18 @@ public class PlayerCS : MonoBehaviour
             currentPlayerState = PlayerState.Inventory;
             inventoryAnimator.SetBool("Open", true);
             selectedItemInventory = null;
-            selectedItemUI.ResetItem();
-            int ammount = ownedItemsList.Count;
-            for(int i=0; i<2;i++)
+            selectedItemUI.TurnOffItem();
+            if(equippedHelmet==null)
+                equippedUIHelmet.gameObject.SetActive(false);
+            if (equippedChest == null)
+                equippedUIChest.gameObject.SetActive(false);
+            if (equippedPants == null)
+                equippedUIPants.gameObject.SetActive(false);
+            if (equippedBoots == null)
+                equippedUIBoots.gameObject.SetActive(false);
+
+    int ammount = ownedItemsList.Count;
+            for (int i=0; i<16;i++)
             {
                 if(i< ammount)
                 {
@@ -352,6 +372,7 @@ public class PlayerCS : MonoBehaviour
         {
             currentPlayerState = PlayerState.Idle;
             inventoryAnimator.SetBool("Open", false);
+            inventoryToolTip.text = "Inventory can be open with 'i'";
         }
     }
 
@@ -362,8 +383,64 @@ public class PlayerCS : MonoBehaviour
             selectedItemUI.SelectItem(ownedItemsList[id],true, equipped);
         else
             selectedItemUI.SelectItem(ownedItemsList[id], false, equipped);
-        //selectedItemImage.sprite = ownedItemsList[id].icon;
         selectedItemInventory = ownedItemsList[id];
+    }
+
+    public void EquipUnequipItem()
+    {
+        if (CompareEquipped(selectedItemInventory))
+        {
+            switch (selectedItemInventory.type)
+            {
+                case Item.ItemType.Helmet:
+                    equippedHelmet = null;
+                    equippedUIHelmet.gameObject.SetActive(false);
+                    break;
+                case Item.ItemType.Chest:
+                    equippedChest = null;
+                    equippedUIChest.gameObject.SetActive(false);
+                    break;
+                case Item.ItemType.Pants:
+                    equippedPants = null;
+                    equippedUIPants.gameObject.SetActive(false);
+                    break;
+                case Item.ItemType.Boots:
+                    equippedBoots = null;
+                    equippedUIBoots.gameObject.SetActive(false);
+                    break;
+            }
+            selectedItemUI.ResetItem(false);
+            inventoryTextMessage.text = "Successfully unequipped " + selectedItemInventory.name;
+        }
+        else
+        {
+            switch(selectedItemInventory.type)
+            {
+                case Item.ItemType.Helmet:
+                    equippedHelmet = selectedItemInventory;
+                    equippedUIHelmet.sprite = equippedHelmet.icon;
+                    equippedUIHelmet.gameObject.SetActive(true);
+                    break;
+                case Item.ItemType.Chest:
+                    equippedChest = selectedItemInventory;
+                    equippedUIChest.sprite = equippedChest.icon;
+                    equippedUIChest.gameObject.SetActive(true);
+                    break;
+                case Item.ItemType.Pants:
+                    equippedPants = selectedItemInventory;
+                    equippedUIPants.sprite = equippedPants.icon;
+                    equippedUIPants.gameObject.SetActive(true);
+                    break;
+                case Item.ItemType.Boots:
+                    equippedBoots = selectedItemInventory;
+                    equippedUIBoots.sprite = equippedBoots.icon;
+                    equippedUIBoots.gameObject.SetActive(true);
+                    break;
+            }
+
+            selectedItemUI.ResetItem(true);
+            inventoryTextMessage.text = "Successfully equipped " + selectedItemInventory.name;
+        }
     }
 
     private bool CompareEquipped(Item item)
@@ -377,10 +454,31 @@ public class PlayerCS : MonoBehaviour
                     return true;
                 }
                 break;
+
+            case Item.ItemType.Chest:
+                if (item == equippedChest)
+                {
+                    return true;
+                }
+                break;
+            case Item.ItemType.Pants:
+                if (item == equippedPants)
+                {
+                    return true;
+                }
+                break;
+            case Item.ItemType.Boots:
+                if (item == equippedBoots)
+                {
+                    return true;
+                }
+                break;
         }
 
         return false;
     }
+
+
 
 
     #region Player Movement Physics
